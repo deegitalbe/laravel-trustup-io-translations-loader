@@ -15,7 +15,7 @@ class TrustUpTranslationServiceProvider extends IlluminateTranslationServiceProv
     protected function registerLoader()
     {
         $this->app->singleton('translation.loader', function ($app) {
-            $class = '\App\TrustUpTranslationLoader';
+            $class = LaravelTrustupIoTranslationsLoader::class;
 
             return new $class($app['files'], $app['path.lang']);
         });
