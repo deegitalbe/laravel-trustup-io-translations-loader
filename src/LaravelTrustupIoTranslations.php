@@ -21,6 +21,11 @@ class LaravelTrustupIoTranslations
         return config('trustup-io-translations-loader.cache.duration');
     }
 
+    public function cacheIsDisabled(): bool
+    {
+        return config('trustup-io-translations-loader.cache.enabled') === false;
+    }
+
     public function get()
     {
         if ( $this->translations ) {
@@ -34,6 +39,11 @@ class LaravelTrustupIoTranslations
 
     public function set(): void
     {
+        if ( $this->cacheIsDisabled() ) {
+            $this->translations = $this->load();
+            return;
+        }
+
         $this->translations = Cache::remember($this->getCacheKey(), $this->getCacheDuration(), function () {
             return $this->load();
         });
@@ -54,7 +64,7 @@ class LaravelTrustupIoTranslations
     {
         Cache::forget($this->getCacheKey());
         $this->translations = [];
-        
+
         $this->set();
     }
 
