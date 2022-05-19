@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Deegitalbe\LaravelTrustupIoTranslationsLoader\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class LaravelTrustupIoTranslationsLoaderCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'laravel-trustup-io-translations-loader';
 
     public $description = 'My command';
 
