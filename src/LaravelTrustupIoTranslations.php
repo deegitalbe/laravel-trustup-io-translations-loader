@@ -51,7 +51,10 @@ class LaravelTrustupIoTranslations
 
     public function load(): array
     {
-        $response = Http::get(config('trustup-io-translations-loader.url').'/'.config('trustup-io-translations-loader.app_name').'/translations.json')->json();
+        $response = Http::withHeaders([
+            'X-Server-Authorization' => env('TRUSTUP_SERVER_AUTHORIZATION')
+        ])->get(config('trustup-io-translations-loader.url').'/'.config('trustup-io-translations-loader.app_name').'/translations.json');
+        
         if ( $response->ok() ) {
             return $response->json();
         }
