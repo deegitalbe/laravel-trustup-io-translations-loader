@@ -22,5 +22,7 @@ class LaravelTrustupIoTranslationsLoaderServiceProvider extends PackageServicePr
             // ->hasMigration('create_laravel-trustup-io-translations-loader_table')
             // ->hasCommand(LaravelTrustupIoTranslationsLoaderCommand::class)
             ->hasRoute('webhooks');
+
+        require_once __DIR__.'/helpers.php';
     }
 }
