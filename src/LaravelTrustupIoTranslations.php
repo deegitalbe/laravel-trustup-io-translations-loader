@@ -16,6 +16,11 @@ class LaravelTrustupIoTranslations
         return config('trustup-io-translations-loader.cache.key');
     }
 
+    public function getFallbackCacheKey(): string
+    {
+        return config('trustup-io-translations-loader.cache.key').'-fallback';
+    }
+
     public function getCacheDuration(): string
     {
         return config('trustup-io-translations-loader.cache.duration');
@@ -28,7 +33,7 @@ class LaravelTrustupIoTranslations
 
     public function get()
     {
-        if ( $this->translations ) {
+        if ( is_array($this->translations) ) {
             return $this->translations;
         }
         
@@ -51,16 +56,29 @@ class LaravelTrustupIoTranslations
 
     public function load(): array
     {
-        $response = Http::withHeaders([
-            'X-Server-Authorization' => env('TRUSTUP_SERVER_AUTHORIZATION')
-        ])->get(config('trustup-io-translations-loader.url').'/'.config('trustup-io-translations-loader.app_name').'/translations.json');
+        $response = rescue(function() {
+            return Http::withHeaders([
+                'X-Server-Authorization' => env('TRUSTUP_SERVER_AUTHORIZATION')
+            ])
+            ->timeout(2)
+            ->get(config('trustup-io-translations-loader.url').'/'.config('trustup-io-translations-loader.app_name').'/translations.json');
+        });
         
-        if ( $response->ok() ) {
-            return $response->json();
+        if ( ! $response || ! $response->ok() ) {
+            report(new Exception('Could not load translations from TrustUp.IO'));
+            return $this->loadPreviouslyCachedTranslations();
         }
+        
+        Cache::forever($this->getFallbackCacheKey(), $response->json());
 
-        report(new Exception('Could not load translations from TrustUp.IO'));
-        return [];
+        return $response->json();
+    }
+
+    public function loadPreviouslyCachedTranslations(): array
+    {
+        return Cache::has($this->getFallbackCacheKey())
+            ? Cache::get($this->getFallbackCacheKey())
+            : [];
     }
 
     public function refresh()
