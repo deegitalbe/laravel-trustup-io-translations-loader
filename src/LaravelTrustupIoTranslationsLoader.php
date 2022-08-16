@@ -6,7 +6,7 @@ use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Translation\FileLoader;
-use Deegitalbe\LaravelTrustupIoTranslationsLoader\LaravelTrustupIoTranslations;
+use Deegitalbe\LaravelTrustupIoTranslationsLoader\LaravelTrustupIoLocales;
 
 class LaravelTrustupIoTranslationsLoader extends FileLoader
 {

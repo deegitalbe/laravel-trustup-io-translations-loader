@@ -8,6 +8,7 @@ use Deegitalbe\LaravelTrustupIoTranslationsLoader\Commands\LaravelTrustupIoTrans
 
 class LaravelTrustupIoTranslationsLoaderServiceProvider extends PackageServiceProvider
 {
+
     public function configurePackage(Package $package): void
     {
         /*
