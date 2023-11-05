@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Storage;
 
 class LaravelTrustupIoTranslations
 {
-    
+
     public ?array $translations = null;
 
     public function getUnitTestsStorage()
@@ -44,9 +44,9 @@ class LaravelTrustupIoTranslations
         if ( is_array($this->translations) ) {
             return $this->translations;
         }
-        
+
         $this->set();
-        
+
         return $this->translations;
     }
 
@@ -87,12 +87,12 @@ class LaravelTrustupIoTranslations
             ->timeout(2)
             ->get(config('trustup-io-translations-loader.url').'/'.config('trustup-io-translations-loader.app_name').'/translations.json');
         });
-        
+
         if ( ! $response || ! $response->ok() ) {
             report(new Exception('Could not load translations from TrustUp.IO'));
             return $this->loadPreviouslyCachedTranslations();
         }
-        
+
         Cache::forever($this->getFallbackCacheKey(), $response->json());
 
         return $response->json();
