@@ -1,6 +1,6 @@
 <?php
 
-use Deegitalbe\LaravelTrustupIoTranslationsLoader\LaravelTrustupIoLocales;
+use Deegitalbe\LaravelTrustupIoTranslationsLoader\LaravelTrustupIoTranslations;
 use Illuminate\Support\Facades\Route;
 
 Route::get('webhooks/laravel-trustup-io-translations/refresh', function () {
@@ -9,5 +9,5 @@ Route::get('webhooks/laravel-trustup-io-translations/refresh', function () {
         return response('Invalid authorization key.', 401);
     }
 
-    app(LaravelTrustupIoLocales::class)->refresh();
+    app(LaravelTrustupIoTranslations::class)->refresh();
 });
