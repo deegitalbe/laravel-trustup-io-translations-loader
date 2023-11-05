@@ -18,14 +18,12 @@ class LaravelTrustupIoTranslationsLoader extends FileLoader
 
     protected function loadPath($path, $locale, $group)
     {
+        $translations = parent::loadPath($path, $locale, $group);
+
         if ( $this->getTranslations() && isset($this->getTranslations()[$locale][$group]) ) {
-            return $this->getTranslations()[$locale][$group];
+            $translations = array_merge($translations, $this->getTranslations()[$locale][$group]);
         }
-
-        if ($this->files->exists($full = "{$path}/{$locale}/{$group}.php")) {
-            return $this->files->getRequire($full);
-        }
-
-        return [];
+        
+        return $translations;
     }
 }

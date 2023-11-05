@@ -5,11 +5,19 @@ namespace Deegitalbe\LaravelTrustupIoTranslationsLoader;
 use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 class LaravelTrustupIoTranslations
 {
 
     public ?array $translations = null;
+
+    public function getUnitTestsStorage()
+    {
+        return Storage::disk(
+            config('trustup-io-translations-loader.tests.storage_disk', 'local')
+        );
+    }
 
     public function getCacheKey(): string
     {
@@ -44,6 +52,11 @@ class LaravelTrustupIoTranslations
 
     public function set(): void
     {
+        if ( app()->runningUnitTests() ) {
+            $this->setForUnitTests();
+            return;
+        }
+
         if ( $this->cacheIsDisabled() ) {
             $this->translations = $this->load();
             return;
@@ -52,6 +65,17 @@ class LaravelTrustupIoTranslations
         $this->translations = Cache::remember($this->getCacheKey(), $this->getCacheDuration(), function () {
             return $this->load();
         });
+    }
+
+    public function setForUnitTests(): void
+    {
+        if ( $this->getUnitTestsStorage()->exists('translations_tests.json') ) {
+            $this->translations = json_decode($this->getUnitTestsStorage()->get('translations_tests.json'), true);
+            return;
+        }
+
+        $this->translations = $this->load();
+        $this->getUnitTestsStorage()->put('translations_tests.json', json_encode($this->translations));
     }
 
     public function load(): array
