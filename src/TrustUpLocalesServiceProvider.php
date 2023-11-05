@@ -18,27 +18,31 @@ class TrustUpLocalesServiceProvider extends ServiceProvider
         $loader = \Illuminate\Foundation\AliasLoader::getInstance();
         $loader->alias('LaravelTrustupIoLocales', "Deegitalbe\\LaravelTrustupIoTranslationsLoader\\Facades\\LaravelTrustupIoLocales");
 
-        $this->override_configs();
+        $this->overrideConfigs();
     }
 
-    public function override_configs()
+    public function overrideConfigs()
     {
-        $locales = array();
-        foreach (LaravelTrustupIoLocales::locales() as $locale)
+        if ( ! config()->get('laravellocalization') ) {
+            return;
+        }
+
+        $locales = [];
+
+        foreach ( app(LaravelTrustupIoLocales::class)->getLocales() as $locale ) {
             $locales[$locale->locale] = [
                 'name' => $locale->country_name . ' - ' . $locale->language_name,
                 'script' => 'Latn',
                 'native' => $locale->language_name,
                 'regional' => $locale->locale,
             ];
-
+        }
+        
         config()->set('laravellocalization.supportedLocales', $locales);
     }
 
     public function boot()
     {
-
-
-//        dd(config('laravellocalization.supportedLocales'));
+        //
     }
 }

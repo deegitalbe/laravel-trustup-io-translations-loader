@@ -3,35 +3,48 @@
 namespace Deegitalbe\LaravelTrustupIoTranslationsLoader;
 
 use Exception;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Fluent;
 
 class LaravelTrustupIoLocales
 {
-    public static function fetchLocales()
+    public ?Collection $locales = null;
+
+    public function getLocales()
     {
-        $response =  Http::withHeaders([
-            'X-Server-Authorization' => env('TRUSTUP_SERVER_AUTHORIZATION')
-        ])
+        if ( $this->locales ) {
+            return $this->locales;
+        }
+
+        return $this->locales = $this->fetch();
+    }
+
+    public function fetch(): Collection
+    {
+        $response = Http::withHeaders([
+                'X-Server-Authorization' => env('TRUSTUP_SERVER_AUTHORIZATION')
+            ])
             ->timeout(2)
             ->get(config('trustup-io-translations-loader.url').'/locales');
 
         $collect = collect();
-        foreach ((new Fluent($response->json()))->toArray() as $locale)
+        foreach ((new Fluent($response->json()))->toArray() as $locale) {
             $collect->push(new Fluent($locale));
+        }
 
         return $collect;
     }
 
-    public static function getLocale()
+    public function getCurrentLocale()
     {
-        return self::fetchLocales()->where('locale', app()->getLocale())->first();
+        return $this->getLocale(app()->getLocale());
     }
 
-    public static function locales()
+    public function getLocale(string $locale)
     {
-        return self::fetchLocales();
+        return $this->getLocales()->where('locale', $locale)->first();
     }
 
 }
