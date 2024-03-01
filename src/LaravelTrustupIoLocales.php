@@ -40,7 +40,7 @@ class LaravelTrustupIoLocales
 
         Cache::forever('trustup-io-translations-locales', $locales);
 
-        return $collect;
+        return $locales;
     }
 
     public function getCurrentLocale()
