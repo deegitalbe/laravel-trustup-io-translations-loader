@@ -14,7 +14,10 @@ class TrustUpLocalesServiceProvider extends ServiceProvider
         $this->app->bind('laravel-trustup-io-locales', function ($app) {
             return new LaravelTrustupIoLocales;
         });
+    }
 
+    public function boot()
+    {
         $loader = \Illuminate\Foundation\AliasLoader::getInstance();
         $loader->alias('LaravelTrustupIoLocales', "Deegitalbe\\LaravelTrustupIoTranslationsLoader\\Facades\\LaravelTrustupIoLocales");
 
@@ -39,10 +42,5 @@ class TrustUpLocalesServiceProvider extends ServiceProvider
         }
         
         config()->set('laravellocalization.supportedLocales', $locales);
-    }
-
-    public function boot()
-    {
-        //
     }
 }

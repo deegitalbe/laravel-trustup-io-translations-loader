@@ -18,6 +18,10 @@ class LaravelTrustupIoLocales
             return $this->locales;
         }
 
+        if ( Cache::has('trustup-io-translations-locales') ) {
+            return $this->locales = Cache::get('trustup-io-translations-locales');
+        }
+
         return $this->locales = $this->fetch();
     }
 
@@ -29,10 +33,12 @@ class LaravelTrustupIoLocales
             ->timeout(2)
             ->get(config('trustup-io-translations-loader.url').'/locales');
 
-        $collect = collect();
+        $locales = collect();
         foreach ((new Fluent($response->json()))->toArray() as $locale) {
-            $collect->push(new Fluent($locale));
+            $locales->push(new Fluent($locale));
         }
+
+        Cache::forever('trustup-io-translations-locales', $locales);
 
         return $collect;
     }
