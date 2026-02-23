@@ -1,0 +1,16 @@
+{
+    "name": "@deegitalbe/laravel-trustup-io-translations-loader",
+    "version": "1.4.1",
+    "main": "index.js",
+    "repository": "git@github.com:deegitalbe/laravel-trustup-io-translations-loader.git",
+    "author": "Mathieu Henrotay <mathieu.henrotay@gmail.com>",
+    "license": "MIT",
+    "private": true,
+    "devDependencies": {
+        "@changesets/cli": "^2.29.7"
+    },
+    "scripts": {
+        "release": "changeset publish",
+        "postversion": "git push && git push --tags"
+    }
+}
