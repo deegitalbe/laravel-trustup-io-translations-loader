@@ -52,14 +52,14 @@ class LaravelTrustupIoTranslations
         return $this->getDiskFileNameWithoutExtension().'-fallback.json';
     }
 
-    public function getCacheDuration(): string
+    public function getCacheDuration(): int
     {
-        return config('trustup-io-translations-loader.cache.duration');
+        return (int) config('trustup-io-translations-loader.cache.duration');
     }
 
-    public function getDiskDuration(): string
+    public function getDiskDuration(): int
     {
-        return config('trustup-io-translations-loader.disk.duration');
+        return (int) config('trustup-io-translations-loader.disk.duration');
     }
 
     public function cacheIsDisabled(): bool

@@ -2,6 +2,7 @@
 
 namespace Deegitalbe\LaravelTrustupIoTranslationsLoader;
 
+use Illuminate\Translation\FileLoader;
 use Illuminate\Translation\TranslationServiceProvider as IlluminateTranslationServiceProvider;
 
 class TrustUpTranslationServiceProvider extends IlluminateTranslationServiceProvider
@@ -9,15 +10,15 @@ class TrustUpTranslationServiceProvider extends IlluminateTranslationServiceProv
 
     /**
      * Register the translation line loader. This method registers a
-     * `TranslationLoaderManager` instead of a simple `FileLoader` as the
+     * `LaravelTrustupIoTranslationsLoader` instead of a simple `FileLoader` as the
      * applications `translation.loader` instance.
      */
     protected function registerLoader()
     {
         $this->app->singleton('translation.loader', function ($app) {
-            $class = LaravelTrustupIoTranslationsLoader::class;
+            $frameworkLangPath = dirname((new \ReflectionClass(FileLoader::class))->getFileName()) . '/lang';
 
-            return new $class($app['files'], $app['path.lang']);
+            return new LaravelTrustupIoTranslationsLoader($app['files'], [$frameworkLangPath, $app['path.lang']]);
         });
     }
 
