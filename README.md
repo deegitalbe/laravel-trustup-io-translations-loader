@@ -66,6 +66,19 @@ $laravelTrustupIoTranslationsLoader = new Deegitalbe\LaravelTrustupIoTranslation
 echo $laravelTrustupIoTranslationsLoader->echoPhrase('Hello, Deegitalbe!');
 ```
 
+### Locale format (ISO applications)
+
+TrustUp.io keys translations by country-language (`be-fr`). If your app uses ISO
+language-country locales (`fr-BE`), enable the conversion:
+
+```env
+TRUSTUP_IO_TRANSLATIONS_LOCALE_FORMAT=iso
+```
+
+The loader converts the app locale to the TrustUp.io locale at lookup time (it
+only changes the lookup key, never the cached bundle). Default `service` keeps
+the locale as-is.
+
 ## Testing
 
 ```bash
