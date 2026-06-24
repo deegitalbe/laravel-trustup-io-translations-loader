@@ -1,0 +1,102 @@
+<?php
+
+use Deegitalbe\LaravelTrustupIoTranslationsLoader\LaravelTrustupIoLocales;
+use Deegitalbe\LaravelTrustupIoTranslationsLoader\LaravelTrustupIoTranslations;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
+
+beforeEach(function () {
+    config()->set('trustup-io-translations-loader.url', 'https://translations.trustup.io');
+    config()->set('trustup-io-translations-loader.app_name', 'test-app');
+    config()->set('trustup-io-translations-loader.cache.enabled', false);
+    config()->set('trustup-io-translations-loader.disk.enabled', false);
+    Storage::fake('local');
+    Cache::flush();
+    Http::preventStrayRequests();
+});
+
+it('does not hit the API for translations when tests.fetch is false', function () {
+    config()->set('trustup-io-translations-loader.tests.fetch', false);
+    Http::fake();
+
+    $translations = new LaravelTrustupIoTranslations;
+
+    expect($translations->get())->toBe([]);
+    Http::assertNothingSent();
+});
+
+it('returns the full default locale set, each well-formed, without hitting the API when tests.fetch is false', function () {
+    config()->set('trustup-io-translations-loader.tests.fetch', false);
+    Http::fake();
+
+    $locales = (new LaravelTrustupIoLocales)->getLocales();
+
+    expect($locales)->toHaveCount(8);
+    $locales->each(function ($locale): void {
+        expect($locale->locale)->not->toBeEmpty()
+            ->and($locale->language)->not->toBeEmpty()
+            ->and($locale->country)->not->toBeEmpty();
+    });
+    Http::assertNothingSent();
+});
+
+it('converts iso locales offline using the default locales when tests.fetch is false', function (string $iso, string $service) {
+    config()->set('trustup-io-translations-loader.tests.fetch', false);
+    Http::fake();
+
+    expect((new LaravelTrustupIoLocales)->toServiceLocale($iso))->toBe($service);
+    Http::assertNothingSent();
+})->with([
+    ['fr-BE', 'be-fr'],
+    ['nl-BE', 'be-nl'],
+    ['en-BE', 'be-en'],
+    ['de-BE', 'be-de'],
+    ['fr-FR', 'fr-fr'],
+    ['en-FR', 'fr-en'],
+    ['nl-NL', 'nl-nl'],
+    ['en-NL', 'nl-en'],
+]);
+
+it('leaves an unmapped iso locale unchanged offline when tests.fetch is false', function () {
+    config()->set('trustup-io-translations-loader.tests.fetch', false);
+    Http::fake();
+
+    expect((new LaravelTrustupIoLocales)->toServiceLocale('es-ES'))->toBe('es-ES');
+    Http::assertNothingSent();
+});
+
+it('bypasses a warm locales cache when tests.fetch is false', function () {
+    config()->set('trustup-io-translations-loader.tests.fetch', false);
+    config()->set('trustup-io-translations-loader.cache.enabled', true);
+    \Illuminate\Support\Facades\Cache::forever('trustup-io-translations-locales', collect([
+        new \Illuminate\Support\Fluent(['locale' => 'stale', 'language' => 'st', 'country' => 'al']),
+    ]));
+    Http::fake();
+
+    expect((new LaravelTrustupIoLocales)->toServiceLocale('fr-BE'))->toBe('be-fr');
+    Http::assertNothingSent();
+});
+
+it('defaults to fetching when tests.fetch is absent (config not published)', function () {
+    config()->set('trustup-io-translations-loader.tests.fetch', null);
+    Http::fake([
+        'https://translations.trustup.io/test-app/translations.json' => Http::response(['be-fr' => []], 200),
+    ]);
+
+    (new LaravelTrustupIoTranslations)->get();
+
+    Http::assertSent(fn ($request) => str_contains($request->url(), '/translations.json'));
+});
+
+it('still fetches when tests.fetch is true (default behaviour)', function () {
+    config()->set('trustup-io-translations-loader.tests.fetch', true);
+    Http::fake([
+        'https://translations.trustup.io/test-app/translations.json' => Http::response(['be-fr' => []], 200),
+    ]);
+
+    $translations = new LaravelTrustupIoTranslations;
+    $translations->get();
+
+    Http::assertSent(fn ($request) => str_contains($request->url(), '/translations.json'));
+});
