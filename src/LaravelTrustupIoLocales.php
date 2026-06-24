@@ -18,11 +18,33 @@ class LaravelTrustupIoLocales
             return $this->locales;
         }
 
+        if ( config('trustup-io-translations-loader.tests.fetch', true) === false ) {
+            return $this->locales = $this->defaultLocales();
+        }
+
         if ( Cache::has('trustup-io-translations-locales') ) {
             return $this->locales = Cache::get('trustup-io-translations-locales');
         }
 
         return $this->locales = $this->fetch();
+    }
+
+    /**
+     * Locales used during tests when fetching is disabled, so the iso locale
+     * conversion still works offline. Mirrors the locales the API exposes.
+     */
+    protected function defaultLocales(): Collection
+    {
+        return collect([
+            ['locale' => 'be-fr', 'language' => 'fr', 'country' => 'be'],
+            ['locale' => 'be-nl', 'language' => 'nl', 'country' => 'be'],
+            ['locale' => 'be-en', 'language' => 'en', 'country' => 'be'],
+            ['locale' => 'be-de', 'language' => 'de', 'country' => 'be'],
+            ['locale' => 'fr-fr', 'language' => 'fr', 'country' => 'fr'],
+            ['locale' => 'fr-en', 'language' => 'en', 'country' => 'fr'],
+            ['locale' => 'nl-nl', 'language' => 'nl', 'country' => 'nl'],
+            ['locale' => 'nl-en', 'language' => 'en', 'country' => 'nl'],
+        ])->map(fn (array $locale): Fluent => new Fluent($locale));
     }
 
     public function fetch(): Collection

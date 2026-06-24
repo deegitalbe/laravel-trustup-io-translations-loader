@@ -151,6 +151,11 @@ class LaravelTrustupIoTranslations
 
     public function setForUnitTests(): void
     {
+        if ( config('trustup-io-translations-loader.tests.fetch', true) === false ) {
+            $this->translations = [];
+            return;
+        }
+
         if ( $this->getUnitTestsStorage()->exists('translations_tests.json') ) {
             $this->translations = json_decode($this->getUnitTestsStorage()->get('translations_tests.json'), true);
             return;

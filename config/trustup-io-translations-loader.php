@@ -61,14 +61,15 @@ return [
 
     /**
      * Tests settings.
-     * When unit tests are running, the package will only load translations
-     * once then store them in a .json file to prevent hitting the API
-     * too much. We do not leverage the cache for this as it can
-     * be disabled during some or all tests.
-     * 
-     * You can customize the storage disk if you want.
+     * When unit tests are running, the package loads translations once then
+     * stores them in a .json file to avoid hitting the API too much.
+     *
+     * Set 'fetch' to false to keep the loader fully offline during tests: it
+     * then resolves no translations and no locales without any network call.
+     * Tests that need remote data bind their own instances instead.
      */
     'tests' => [
+        'fetch' => env('TRUSTUP_IO_TRANSLATIONS_TESTS_FETCH', true),
         'storage_disk' => env('TRUSTUP_IO_TRANSLATIONS_TESTS_STORAGE_DISK', 'local'),
     ],
 ];
