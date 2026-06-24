@@ -1,5 +1,7 @@
 <?php
 
+use Deegitalbe\LaravelTrustupIoTranslationsLoader\Enums\LocaleFormat;
+
 return [
 
     /**
@@ -12,6 +14,15 @@ return [
      * It needs to match the value set on translations.trustup.io.
      */
     'app_name' => env('TRUSTUP_IO_TRANSLATIONS_APP_NAME'),
+
+    /**
+     * Locale format of the application.
+     *
+     * "iso" maps an ISO app locale ("fr-BE") to the TrustUp.io locale ("be-fr")
+     * at lookup time only; the cached bundle stays keyed by the service locale.
+     * "service" (default) uses the locale as-is.
+     */
+    'locale_format' => env('TRUSTUP_IO_TRANSLATIONS_LOCALE_FORMAT', LocaleFormat::Service->value),
 
     /**
      * Cache settings.
