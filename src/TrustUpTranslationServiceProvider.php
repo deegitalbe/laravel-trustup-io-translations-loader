@@ -2,24 +2,15 @@
 
 namespace Deegitalbe\LaravelTrustupIoTranslationsLoader;
 
-use Illuminate\Translation\FileLoader;
-use Illuminate\Translation\TranslationServiceProvider as IlluminateTranslationServiceProvider;
+use Illuminate\Support\ServiceProvider;
 
-class TrustUpTranslationServiceProvider extends IlluminateTranslationServiceProvider
+/**
+ * @deprecated The remote translation loader is now registered automatically by
+ * the auto-discovered LaravelTrustupIoTranslationsLoaderServiceProvider. This
+ * provider is a no-op kept only so existing manual registrations keep working;
+ * remove it from your providers list.
+ */
+class TrustUpTranslationServiceProvider extends ServiceProvider
 {
-
-    /**
-     * Register the translation line loader. This method registers a
-     * `LaravelTrustupIoTranslationsLoader` instead of a simple `FileLoader` as the
-     * applications `translation.loader` instance.
-     */
-    protected function registerLoader()
-    {
-        $this->app->singleton('translation.loader', function ($app) {
-            $frameworkLangPath = dirname((new \ReflectionClass(FileLoader::class))->getFileName()) . '/lang';
-
-            return new LaravelTrustupIoTranslationsLoader($app['files'], [$frameworkLangPath, $app['path.lang']]);
-        });
-    }
-
+    public function register(): void {}
 }

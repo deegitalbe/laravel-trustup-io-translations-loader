@@ -5,7 +5,6 @@ namespace Deegitalbe\LaravelTrustupIoTranslationsLoader\Tests;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Deegitalbe\LaravelTrustupIoTranslationsLoader\LaravelTrustupIoTranslationsLoaderServiceProvider;
-use Deegitalbe\LaravelTrustupIoTranslationsLoader\TrustUpTranslationServiceProvider;
 
 class TestCase extends Orchestra
 {
@@ -22,7 +21,6 @@ class TestCase extends Orchestra
     {
         return [
             LaravelTrustupIoTranslationsLoaderServiceProvider::class,
-            TrustUpTranslationServiceProvider::class,
         ];
     }
 
